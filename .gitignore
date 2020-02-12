@@ -1,0 +1,29 @@
+# ---> Elixir
+/_build
+/deps
+erl_crash.dump
+*.ez
+
+# ---> KiCAD
+# For PCBs designed using KiCAD: http://www.kicad-pcb.org/
+
+# Temporary files
+*.000
+*.bak
+*.bck
+*.kicad_pcb-bak
+
+# Netlist files (exported from Eeschema)
+*.net
+
+# Autorouter files (exported from Pcbnew)
+.dsn
+
+# ---> Vim
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+
