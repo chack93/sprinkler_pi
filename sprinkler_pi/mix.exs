@@ -1,7 +1,7 @@
-defmodule SprinkerPi.MixProject do
+defmodule SprinklerPi.MixProject do
   use Mix.Project
 
-  @app :sprinker_pi
+  @app :sprinkler_pi
   @version "0.1.0"
   @all_targets [:rpi, :rpi0, :rpi2, :rpi3, :rpi3a, :rpi4, :bbb, :x86_64]
 
@@ -30,8 +30,8 @@ defmodule SprinkerPi.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      mod: {SprinkerPi.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      mod: {SprinklerPi.Application, []},
+      extra_applications: [:logger, :runtime_tools, :inets]
     ]
   end
 
@@ -39,6 +39,7 @@ defmodule SprinkerPi.MixProject do
   defp deps do
     [
       # Dependencies for all targets
+      {:sprinkler_pi_ui, path: "../sprinkler_pi_ui"},
       {:nerves, "~> 1.5.0", runtime: false},
       {:shoehorn, "~> 0.6"},
       {:ring_logger, "~> 0.6"},
@@ -47,6 +48,8 @@ defmodule SprinkerPi.MixProject do
       # Dependencies for all targets except :host
       {:nerves_runtime, "~> 0.6", targets: @all_targets},
       {:nerves_init_gadget, "~> 0.4", targets: @all_targets},
+      {:nerves_firmware_ssh, "~> 0.3", targets: @all_targets},
+      {:circuits_gpio, "~> 0.4", targets: @all_targets},
 
       # Dependencies for specific targets
       {:nerves_system_rpi, "~> 1.10", runtime: false, targets: :rpi},
