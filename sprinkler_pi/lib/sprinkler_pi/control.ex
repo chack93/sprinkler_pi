@@ -36,6 +36,13 @@ defmodule SprinklerPi.Control do
     Circuits.GPIO.set_interrupts(ref_button, :both)
     Circuits.GPIO.set_interrupts(ref_water_sensor, :both)
 
+    Circuits.GPIO.set_pull_mode(ref_motor, :none)
+    Circuits.GPIO.set_pull_mode(ref_valve, :none)
+    Circuits.GPIO.set_pull_mode(ref_led_red, :none)
+    Circuits.GPIO.set_pull_mode(ref_led_green, :none)
+    Circuits.GPIO.set_pull_mode(ref_button, :none)
+    Circuits.GPIO.set_pull_mode(ref_water_sensor, :none)
+
     Circuits.GPIO.write(ref_motor, default_motor)
     Circuits.GPIO.write(ref_valve, default_valve)
     Circuits.GPIO.write(ref_led_red, default_led_red)
@@ -65,8 +72,8 @@ defmodule SprinklerPi.Control do
   @doc """
   add given pid to gpio-changes subscribers.
   gpio-changes message example: (gpio, state, timestamp)
-  * `{:io_motor, "on", 123456}`
-  * `{:io_button, "off", 123567}`
+  * GenServer.cast(pid, {:io_motor, "on", 123456})
+  * GenServer.cast(pid, {:io_button, "off", 123567}
   """
   def handle_cast({:add_subscriber, pid}, {sub_list, ref, pinmap}) do
     {:noreply, {[sub_list | pid]}, ref, pinmap}
@@ -140,5 +147,31 @@ defmodule SprinklerPi.Control do
   """
   def set_state(gpio, state) do
     GenServer.cast(SprinklerPi.Control, {:set_state, gpio, state})
+    :ok
+  end
+
+  @doc """
+  add pid to gpio update subscriber list
+  gpio-changes event message message example: (gpio, state, timestamp)
+  * GenServer.cast(pid, {:io_motor, "on", 123456})
+  * GenServer.cast(pid, {:io_button, "off", 123567}
+  # Example
+  iex> SprinklerPi.Control.add_subscriber(self)
+  ... :ok
+  """
+  def add_subscriber(pid) do
+    GenServer.cast(SprinklerPi.Control, {:add_subscriber, pid})
+    :ok
+  end
+
+  @doc """
+  remove pid from gpio update subscriber list
+  # Example
+  iex> SprinklerPi.Control.remove_subscriber(self)
+  ... :ok
+  """
+  def remove_subscriber(pid) do
+    GenServer.cast(SprinklerPi.Control, {:remove_subscriber, pid})
+    :ok
   end
 end

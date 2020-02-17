@@ -1,5 +1,5 @@
 defmodule SprinklerPi do
   @moduledoc """
-  SprinklerPi Base
+  SprinklerPi Module
   """
 end
