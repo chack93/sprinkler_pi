@@ -1,0 +1,60 @@
+/*
+<label class="toggle-switch">
+  <input type="checkbox" value="<%= @value %>">
+  <span class="toogle-switch-slider"></span>
+</label>
+*/
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 5rem;
+  height: 2.5rem;
+  border-radius: 1.25rem;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $red;
+  transition: transform ease 0.25s;
+  border-radius: 1.25rem;
+  box-shadow: 0 0.25rem 0.5rem $shadow-black inset;
+}
+
+.toggle-switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 2rem;
+  width: 2rem;
+  left: 0.25rem;
+  bottom: 0.25rem;
+  background-color: $white;
+  transition: transform ease 0.25s;
+  border-radius: 1rem;
+  box-shadow: 0 0.25rem 0.5rem $shadow-black;
+}
+
+input:checked + .toggle-switch-slider {
+  background-color: $green;
+}
+
+input:focus + .toggle-switch-slider {
+  box-shadow: none;
+}
+input:checked + .toggle-switch {
+  box-shadow: none;
+}
+
+input:checked + .toggle-switch-slider:before {
+  transform: translateX(2.5rem);
+}

@@ -10,12 +10,28 @@ defmodule SprinklerPiUiWeb.Endpoint do
   socket "/socket", SprinklerPiUiWeb.UserSocket,
     websocket: true,
     longpoll: false
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: [connect_info: [session: @session_options]]
 
   plug Plug.Static,
     at: "/",
     from: :sprinkler_pi_ui,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: ~w(css fonts images js favicon.ico robots.txt
+      apple-touch-icon.png
+      android-chrome-192x192.png
+      android-chrome-256x256.png
+      browserconfig.xml
+      favicon-16x16.png
+      favicon-32x32.png
+      favicon.ico
+      favicon.png
+      images
+      mstile-150x150.png
+      robots.txt
+      safari-pinned-tab.svg
+      site.webmanifest
+    )
 
   if code_reloading? do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket

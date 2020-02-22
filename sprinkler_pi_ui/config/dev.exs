@@ -1,11 +1,21 @@
 use Mix.Config
 
 config :sprinkler_pi_ui, SprinklerPiUiWeb.Endpoint,
-  http: [port: 4000],
+  http: [
+    port: String.to_integer(System.get_env("PORT") || "4000")
+  ],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
-  watchers: []
+  watchers: [
+    node: [
+      "node_modules/webpack/bin/webpack.js",
+      "--mode",
+      "development",
+      "--watch-stdin",
+      cd: Path.expand("../assets", __DIR__)
+    ]
+  ]
 
 # Watch static and templates for browser reloading.
 config :sprinkler_pi_ui, SprinklerPiUiWeb.Endpoint,

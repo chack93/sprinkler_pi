@@ -1,20 +1,6 @@
 defmodule SprinklerPiUiWeb do
   @moduledoc """
-  The entrypoint for defining your web interface, such
-  as controllers, views, channels and so on.
-
-  This can be used in your application as:
-
-      use SprinklerPiUiWeb, :controller
-      use SprinklerPiUiWeb, :view
-
-  The definitions below will be executed for every view,
-  controller, etc, so keep them short and clean, focused
-  on imports, uses and aliases.
-
-  Do NOT define functions inside the quoted expressions
-  below. Instead, define any helper function in modules
-  and import those modules here.
+  SprinklerPiUiWeb module
   """
 
   def controller do
@@ -24,6 +10,7 @@ defmodule SprinklerPiUiWeb do
       import Plug.Conn
       import SprinklerPiUiWeb.Gettext
       alias SprinklerPiUiWeb.Router.Helpers, as: Routes
+      import Phoenix.LiveView.Helpers
     end
   end
 
@@ -42,6 +29,7 @@ defmodule SprinklerPiUiWeb do
       import SprinklerPiUiWeb.ErrorHelpers
       import SprinklerPiUiWeb.Gettext
       alias SprinklerPiUiWeb.Router.Helpers, as: Routes
+      import Phoenix.LiveView.Helpers
     end
   end
 
@@ -50,6 +38,7 @@ defmodule SprinklerPiUiWeb do
       use Phoenix.Router
       import Plug.Conn
       import Phoenix.Controller
+      import Phoenix.LiveView.Router
     end
   end
 

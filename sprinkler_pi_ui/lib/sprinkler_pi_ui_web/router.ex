@@ -4,6 +4,7 @@ defmodule SprinklerPiUiWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
+    plug Phoenix.LiveView.Flash
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
@@ -16,7 +17,9 @@ defmodule SprinklerPiUiWeb.Router do
   scope "/", SprinklerPiUiWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    live "/", DashboardLive
+    live "/dashboard", DashboardLive
+    live "/about", AboutLive
   end
 
   # Other scopes may use custom stacks.

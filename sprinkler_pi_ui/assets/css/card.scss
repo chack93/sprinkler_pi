@@ -1,0 +1,65 @@
+/*
+<div class="card-container">
+  <div class="card">
+    <div class="card-content">
+      <section></section>
+    </div>
+  </div>
+</div>
+ */
+@import "./color.scss";
+
+.card-container {
+  font-size: 0;
+  max-width: 800px;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.card-content {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  padding: 0.25rem;
+  border-radius: 1rem;
+  background-clip: content-box;
+  background-color: $blue;
+  transition: transform ease 0.25s;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    bottom: 0.25rem;
+    left: 0.25rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem $shadow-black;
+  }
+  &.scale-transform:active {
+    transform: scale(0.95);
+  }
+}
+.card {
+  width: 100%;
+  max-height: 16rem;
+  position: relative;
+  font-size: initial;
+  vertical-align: top;
+  &::before {
+    content: "";
+    display: block;
+    box-sizing: border-box;
+    padding-top: 50%;
+  }
+
+  &.card-half {
+    width: 50%;
+    display: inline-block;
+    &::before {
+      padding-top: 100%;
+    }
+  }
+}

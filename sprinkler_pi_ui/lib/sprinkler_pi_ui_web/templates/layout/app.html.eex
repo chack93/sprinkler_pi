@@ -3,29 +3,45 @@
   <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= assigns[:page_title] || "SprinklerPiUi · Phoenix Framework" %></title>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="<%= Routes.static_path(@conn, "/apple-touch-icon.png") %>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<%= Routes.static_path(@conn, "/favicon-32x32.png") %>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= Routes.static_path(@conn, "/favicon-16x16.png") %>">
+    <link rel="manifest" href="<%= Routes.static_path(@conn, "/site.webmanifest") %>">
+    <link rel="mask-icon" href="<%= Routes.static_path(@conn, "/safari-pinned-tab.svg") %> color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
     <%= csrf_meta_tag() %>
   </head>
-  <body>
+  <body ontouchstart="">
+
     <header>
-      <section class="container">
-        <nav role="navigation">
-          <ul>
-            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
-          </ul>
-        </nav>
-        <a href="https://phoenixframework.org/" class="phx-logo">
-          <img src="<%= Routes.static_path(@conn, "/images/phoenix.png") %>" alt="Phoenix Framework Logo"/>
-        </a>
-      </section>
+      <a href="/">
+        <img src="<%= Routes.static_path(@conn, "/images/logo.png") %>" alt="SprinklerPi Logo"/>
+      </a>
+      <a href="/">
+        <h1><%= gettext "Sprinkler π" %></h1>
+      </a>
     </header>
-    <main role="main" class="container">
+
+    <main role="main">
       <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
       <%= render @view_module, @view_template, assigns %>
     </main>
+
+    <footer>
+      <nav role="navigation">
+        <ul>
+          <li><a class="button" href="<%= Routes.live_path(@conn, SprinklerPiUiWeb.DashboardLive) %>">Dashboard</a></li>
+          <li><a class="button" href="<%= Routes.live_path(@conn, SprinklerPiUiWeb.AboutLive) %>">About</a></li>
+        </ul>
+      </nav>
+    </footer>
+
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>

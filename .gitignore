@@ -1,3 +1,5 @@
+.DS_Store
+
 # ---> Elixir
 /_build
 /deps
@@ -28,3 +30,6 @@ Session.vim
 *~
 
 sprinkler_pi/deploy.sh
+
+# ---> node_modules
+sprinkler_pi_ui/assets/node_modules*

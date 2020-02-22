@@ -1,0 +1,5 @@
+<div class="phx-hero">
+  <h1>Hello World</h1>
+  <p><%= @page_title %></p>
+  <p><%= @text %></p>
+</div>
