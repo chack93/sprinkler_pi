@@ -5,7 +5,7 @@ defmodule SprinklerPi.Application do
 
   def start(_type, _args) do
     opts = [strategy: :one_for_one, name: SprinklerPi.Supervisor]
-    children = [] ++ children(target())
+    children = [SprinklerPi.PumpControl, SprinklerPi.Setting, SprinklerPi.Schedule] ++ children(target())
 
     Supervisor.start_link(children, opts)
   end

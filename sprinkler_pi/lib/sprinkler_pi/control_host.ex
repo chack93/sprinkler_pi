@@ -1,9 +1,9 @@
 defmodule SprinklerPi.ControlHost do
   @moduledoc """
   mock `SprinklerPi.ControlTarget` for testing on host
-  will broadcast gpio changes over Phoenix.PubSub topic "io_change"
+  will broadcast gpio changes over Phoenix.PubSub topic "io-change"
   # Broadcast Example
-  def handle_info({"io_change", :io_motor, "on", timestamp}, socket)
+  def handle_info({"io-change", :io_motor, "on", timestamp}, socket)
   """
 
   use GenServer
@@ -22,7 +22,7 @@ defmodule SprinklerPi.ControlHost do
        :io_led_red => "off",
        :io_led_green => "off",
        :io_button => "off",
-       :io_water_sensor => "off"
+       :io_water_sensor => "on"
      }}
   end
 
@@ -34,11 +34,16 @@ defmodule SprinklerPi.ControlHost do
   ... :ok
   """
   def handle_cast({:set_state, gpio, state}, state_map) do
-    Logger.info("SprinklerPi.ControlHost - :set_state #{gpio}->#{state}")
+    Logger.info("SprinklerPi.ControlHost:set_state - #{gpio}->#{state}")
     new_state_map = Map.put(state_map, gpio, state)
 
     timestamp = DateTime.to_unix(DateTime.utc_now(), :microsecond)
-    Phoenix.PubSub.broadcast(SprinklerPiUi.PubSub, "io_change", {"io_change",gpio, state, timestamp})
+
+    Phoenix.PubSub.broadcast(
+      SprinklerPiUi.PubSub,
+      "io-change",
+      {"io_change", gpio, state, timestamp}
+    )
 
     {:noreply, new_state_map}
   end
@@ -52,7 +57,6 @@ defmodule SprinklerPi.ControlHost do
   """
   def handle_call({:get_state, gpio}, _from, state_map) do
     state = state_map[gpio]
-    Logger.info("SprinklerPi.ControlHost - :get_state #{gpio}->#{state}")
     {:reply, state, state_map}
   end
 end

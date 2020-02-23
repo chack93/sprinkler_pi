@@ -1,9 +1,9 @@
 defmodule SprinklerPi.ControlTarget do
   @moduledoc """
   control hardware peripherals based on gpio pin config in SprinklerPi.Control.
-  will broadcast gpio changes over Phoenix.PubSub topic "io_change"
+  will broadcast gpio changes over Phoenix.PubSub topic "io-change"
   # Broadcast Example
-  def handle_info({"io_change", :io_motor, "on", timestamp}, socket)
+  def handle_info({"io-change", :io_motor, "on", timestamp}, socket)
   """
 
   use GenServer
@@ -88,13 +88,13 @@ defmodule SprinklerPi.ControlTarget do
   @impl true
   def handle_info({:circuits_gpio, pin, _timestamp, state}, {ref, pinmap}) do
     timestamp = DateTime.to_unix(DateTime.utc_now(), :microsecond)
-    Logger.info("SprinklerPi.Control - gpio event pin/state/ts #{pin}/#{state}/#{timestamp}")
+    Logger.info("SprinklerPi.Control:circuits_gpio - gpio-event pin/state/ts #{pin}/#{state}/#{timestamp}")
 
     nice_state = if state == 1, do: "on", else: "off"
 
     Phoenix.PubSub.broadcast(
       SprinklerPiUi.PubSub,
-      "io_change",
+      "io-change",
       {"io_change", pinmap[pin], nice_state, timestamp}
     )
 

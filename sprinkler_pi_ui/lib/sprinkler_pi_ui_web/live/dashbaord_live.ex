@@ -9,7 +9,8 @@ defmodule SprinklerPiUiWeb.DashboardLive do
 
     ~L"""
     <input type="radio" name="<%= @name %>" value="<%= @value %>"
-    <%= if @value == @checked, do: "checked" %> />
+      <%= if @value == @checked, do: "checked" %>
+    />
     """
   end
 
@@ -52,7 +53,7 @@ defmodule SprinklerPiUiWeb.DashboardLive do
   end
 
   def mount(_params, _session, socket) do
-    Phoenix.PubSub.subscribe(SprinklerPiUi.PubSub, "io_change")
+    Phoenix.PubSub.subscribe(SprinklerPiUi.PubSub, "io-change")
     manual_on = Control.get_state(:io_motor) == "on"
     {:ok, assign(socket, manual_on: manual_on)}
   end
@@ -65,10 +66,11 @@ defmodule SprinklerPiUiWeb.DashboardLive do
     {:noreply, assign(socket, manual_on: !motor_state)}
   end
 
-  def handle_info({"io_change", :io_motor, state, timestamp}, socket) do
+  def handle_info({"io-change", :io_motor, state, timestamp}, socket) do
     {:noreply, assign(socket, manual_on: state == "on")}
   end
-  def handle_info({"io_change", _, state, timestamp}, socket) do
+
+  def handle_info({"io-change", _, state, timestamp}, socket) do
     {:noreply, socket}
   end
 end

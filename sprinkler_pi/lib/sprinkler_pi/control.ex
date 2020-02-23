@@ -1,7 +1,7 @@
 defmodule SprinklerPi.Control do
   @moduledoc """
   control hardware peripherals based on gpio pin config in SprinklerPi.Control.
-  will broadcast gpio changes over Phoenix.PubSub topic "io_change"
+  will broadcast gpio changes over Phoenix.PubSub topic "io-change"
   # Broadcast Example
   def handle_info({"io_change", :io_motor, "on", timestamp}, socket)
   """
