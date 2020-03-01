@@ -67,7 +67,7 @@ defmodule SprinklerPi.ScheduleTest do
     assert :ok == SprinklerPi.Schedule.set_override(true)
 
     receive do
-      {"manual-override", true, _ts} -> nil
+      {"manual-override", true, _datetime, _ts} -> nil
       e -> flunk("wrong event sent #{inspect(e)}")
     after
       100 ->
@@ -79,7 +79,7 @@ defmodule SprinklerPi.ScheduleTest do
     assert :ok == SprinklerPi.Schedule.set_override(false)
 
     receive do
-      {"manual-override", false, _ts} -> nil
+      {"manual-override", false, _datetime, _ts} -> nil
       e -> flunk("wrong event sent #{inspect(e)}")
     after
       100 ->
@@ -91,7 +91,7 @@ defmodule SprinklerPi.ScheduleTest do
     assert :ok == SprinklerPi.Schedule.set_override(nil)
 
     receive do
-      {"manual-override", nil, _ts} -> nil
+      {"manual-override", nil, _datetime, _ts} -> nil
       e -> flunk("wrong event sent #{inspect(e)}")
     after
       100 ->

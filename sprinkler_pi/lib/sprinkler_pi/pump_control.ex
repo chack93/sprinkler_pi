@@ -3,9 +3,9 @@ defmodule SprinklerPi.PumpControl do
   control water pump, valve, pump-active-led & check water-sensor
   will broadcast pump on/off & low on water error on topic "pump-control"
   # Broadcast Example on/off
-  def handle_info({"pump-change", true, timestamp}, socket)
+  def handle_info({"pump-change", true, timestamp}, state)
   # Broadcast Example error
-  def handle_info({"pump-error", "water-low", timestamp}, socket)
+  def handle_info({"pump-error", "water-low", timestamp}, state)
   """
   use GenServer
   require Logger
@@ -77,6 +77,7 @@ defmodule SprinklerPi.PumpControl do
     end
   end
 
+  @impl true
   def handle_info({"io_change", :io_water_sensor, water_state, timestamp}, state) do
     if water_state == "off" do
       Logger.info("SprinklerPi.PumpControl:io_change - water low, power off pump")
@@ -92,6 +93,7 @@ defmodule SprinklerPi.PumpControl do
     {:noreply, state}
   end
 
+  @impl true
   def handle_info({"io_change", :io_motor, motor_state, timestamp}, state) do
     Phoenix.PubSub.broadcast(
       SprinklerPiUi.PubSub,

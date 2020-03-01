@@ -5,7 +5,7 @@ defmodule SprinklerPi.Schedule do
   # Broadcast activate schedule Example
   def handle_info({"schedule-activate" {2, 23, 59, 30}, timestamp}, state)
   # Broadcast override Example on/off/reset true/false/nil
-  def handle_info({"manual-override" true, timestamp}, state)
+  def handle_info({"manual-override" true, override_start_date_time, timestamp}, state)
   """
   use GenServer
   require Logger
@@ -112,7 +112,8 @@ defmodule SprinklerPi.Schedule do
     Phoenix.PubSub.broadcast(
       SprinklerPiUi.PubSub,
       "schedule",
-      {"manual-override", override, DateTime.to_unix(DateTime.utc_now(), :millisecond)}
+      {"manual-override", override, override_start,
+       DateTime.to_unix(DateTime.utc_now(), :millisecond)}
     )
 
     {:noreply, {override, override_start}}
@@ -130,7 +131,13 @@ defmodule SprinklerPi.Schedule do
     utc_now = DateTime.utc_now()
     # disable override
     {override, override_start} =
-      if override != nil and DateTime.diff(utc_now, override_start) < override_timeout_seconds do
+      if override != nil and DateTime.diff(utc_now, override_start) > override_timeout_seconds do
+        Phoenix.PubSub.broadcast(
+          SprinklerPiUi.PubSub,
+          "schedule",
+          {"manual-override", nil, nil, DateTime.to_unix(DateTime.utc_now(), :millisecond)}
+        )
+
         {nil, nil}
       else
         {override, override_start}
