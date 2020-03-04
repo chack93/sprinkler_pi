@@ -12,3 +12,13 @@ let liveSocket = new LiveSocket("/live", Socket, {
   }
 });
 liveSocket.connect()
+
+
+// prevent ios safari double-tap zoom
+let lastTouchend = 0
+document.addEventListener("touchend", e => {
+  const now = Date.now()
+  if (e.target.tagName !== "BUTTON" && now - lastTouchend < 300)
+    e.preventDefault()
+  lastTouchend = now
+})

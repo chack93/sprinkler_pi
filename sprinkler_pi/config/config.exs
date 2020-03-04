@@ -3,10 +3,10 @@ import Config
 import_config "../../sprinkler_pi_ui/config/config.exs"
 
 config :sprinkler_pi_ui, SprinklerPiUiWeb.Endpoint,
-  url: [host: "sprinkler_pi.local", port: 80],
-  code_reloader: Mix.env == :dev,
+  url: [host: System.get_env("PORT") || "sprinkler_pi.local", port: 80],
   http: [port: 80],
   load_from_system_env: false,
+  code_reloader: false,
   server: true
 
 config :sprinkler_pi, target: Mix.target()

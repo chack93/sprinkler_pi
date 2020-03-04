@@ -24,11 +24,11 @@ defmodule SprinklerPi.Schedule do
 
   @doc """
   get active schedule
-  result: {week_of_day, hour, minute, duration_in_seconds}
+  result: {id, week_of_day, hour, minute, duration_in_seconds}
   nil if none active or override
   # Example
   iex> SprinklerPi.Schedule.active()
-  ... {7, 11, 45, 240}
+  ... {id, 7, 11, 45, 240}
   """
   def active() do
     GenServer.call(SprinklerPi.Schedule, {:active})
@@ -36,10 +36,10 @@ defmodule SprinklerPi.Schedule do
 
   @doc """
   get next schedule
-  result: {week_of_day, hour_of_day, minute_of_day, duration_in_seconds}
+  result: {id, week_of_day, hour_of_day, minute_of_day, duration_in_seconds}
   # Example
   iex> SprinklerPi.Schedule.next_schedule()
-  ... {1, 10, 59, 120}
+  ... {id, 1, 10, 59, 120}
   """
   def next_schedule() do
     GenServer.call(SprinklerPi.Schedule, {:next_schedule})
@@ -190,7 +190,7 @@ defmodule SprinklerPi.Schedule do
     now = Map.merge(current_time, %{:day => weekday})
 
     schedule
-    |> Enum.filter(fn {w, h, m, duration} ->
+    |> Enum.filter(fn {_id, w, h, m, duration} ->
       sch_start = Map.merge(now, %{:day => w, :hour => h, :minute => m, :second => 0})
       sch_end = NaiveDateTime.add(sch_start, duration, :second)
 
@@ -228,7 +228,7 @@ defmodule SprinklerPi.Schedule do
     now = weekday * 1000 + hour * 100 + minute
 
     schedule
-    |> Enum.sort_by(fn {w, h, m, _} ->
+    |> Enum.sort_by(fn {_id, w, h, m, _} ->
       base = w * 1000 + h * 100 + m
       past_factor = if base < now, do: 7000, else: 0
       base + past_factor

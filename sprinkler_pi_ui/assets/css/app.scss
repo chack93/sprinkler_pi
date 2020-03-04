@@ -1,6 +1,7 @@
 @import "../../deps/phoenix_live_view/assets/css/live_view.css";
 @import "./color.scss";
 @import "./component.scss";
+@import "./schedule.scss";
 
 @font-face {
   font-family: "Lora";
@@ -34,6 +35,7 @@ body {
   font-family: "Lora", serif;
   font-size: 16px;
   line-height: 1.3;
+  text-shadow: 0 1px 2px $shadow-black;
 }
 
 header {
@@ -57,7 +59,15 @@ header {
     transform: translateY(-50%);
   }
 }
-
+main {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 4rem 1rem 4rem;
+  > div {
+    height: 100%;
+  }
+}
 footer {
   width: 100%;
   height: 3rem;
@@ -79,9 +89,7 @@ footer {
     display: flex;
     justify-content: space-around;
   }
-}
-main {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 4rem 1rem 4rem;
+  .button {
+    min-width: 4rem;
+  }
 }

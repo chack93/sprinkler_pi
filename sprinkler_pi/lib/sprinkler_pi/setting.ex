@@ -1,6 +1,8 @@
 defmodule SprinklerPi.Setting do
   @moduledoc """
   read/write settings
+  # Broadcast setting changes on topic "setting"
+  def handle_info({"setting-change", %{"schedule": [], ...}, timestamp}, state)
   """
   use GenServer
   @setting_filename "sprinkler_pi_setting.json"
@@ -18,13 +20,15 @@ defmodule SprinklerPi.Setting do
   @impl true
   def init(_) do
     setting =
-      if File.exists?("sprinkler_pi_setting") do
+      if File.exists?(@setting_filename) do
         {:ok, file} = File.read(@setting_filename)
         {:ok, setting} = Jason.decode(file)
-        schedule = Enum.each(setting["schedule"], fn el -> List.to_tuple(el) end)
+        schedule = Enum.map(setting["schedule"], fn el -> List.to_tuple(el) end)
         Map.merge(setting, %{"schedule" => schedule})
       else
-        {:ok, setting_string} = Jason.encode(@default_setting)
+        schedule = Enum.map(@default_setting["schedule"], fn el -> Tuple.to_list(el) end)
+        setting_tuple_replaced = Map.merge(@default_setting, %{"schedule" => schedule})
+        {:ok, setting_string} = Jason.encode(setting_tuple_replaced)
         File.write(@setting_filename, setting_string)
         @default_setting
       end
@@ -71,6 +75,12 @@ defmodule SprinklerPi.Setting do
 
     {:ok, setting_string} = Jason.encode(setting_tuple_replaced)
     File.write(@setting_filename, setting_string)
+
+    Phoenix.PubSub.broadcast(
+      SprinklerPiUi.PubSub,
+      "setting",
+      {"setting-change", setting, DateTime.to_unix(DateTime.utc_now())}
+    )
     {:reply, setting, setting}
   end
 end

@@ -16,7 +16,7 @@
     <meta name="theme-color" content="#ffffff">
     <%= csrf_meta_tag() %>
   </head>
-  <body ontouchstart="">
+  <body>
 
     <header>
       <a href="/">
@@ -37,6 +37,7 @@
       <nav role="navigation">
         <ul>
           <li><a class="button" href="<%= Routes.live_path(@conn, SprinklerPiUiWeb.DashboardLive) %>">Dashboard</a></li>
+          <li><a class="button" href="<%= Routes.live_path(@conn, SprinklerPiUiWeb.ScheduleLive) %>">Schedule</a></li>
           <li><a class="button" href="<%= Routes.live_path(@conn, SprinklerPiUiWeb.AboutLive) %>">About</a></li>
         </ul>
       </nav>

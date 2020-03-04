@@ -3,11 +3,11 @@ defmodule SprinklerPi.ScheduleTest do
 
   setup_all do
     schedule = [
-      {3, 12, 40, 120},
-      {2, 12, 30, 120},
-      {1, 11, 00, 120},
-      {6, 23, 59, 240},
-      {7, 23, 59, 240}
+      {1, 3, 12, 40, 120},
+      {2, 2, 12, 30, 120},
+      {3, 1, 11, 00, 120},
+      {4, 6, 23, 59, 240},
+      {5, 7, 23, 59, 240}
     ]
 
     SprinklerPi.Setting.set(%{"schedule" => schedule})
@@ -16,25 +16,25 @@ defmodule SprinklerPi.ScheduleTest do
 
   test "filter active schedule", %{:schedule => schedule} do
     # tuesday
-    assert {2, 12, 30, 120} ==
+    assert {2, 2, 12, 30, 120} ==
              SprinklerPi.Schedule.filter_active(schedule, ~N[2020-02-25 12:30:00], nil)
 
-    assert {2, 12, 30, 120} ==
+    assert {2, 2, 12, 30, 120} ==
              SprinklerPi.Schedule.filter_active(schedule, ~N[2020-02-25 12:31:59], nil)
 
-    assert {6, 23, 59, 240} ==
+    assert {4, 6, 23, 59, 240} ==
              SprinklerPi.Schedule.filter_active(schedule, ~N[2020-02-29 23:59:30], nil)
 
-    assert {6, 23, 59, 240} ==
+    assert {4, 6, 23, 59, 240} ==
              SprinklerPi.Schedule.filter_active(schedule, ~N[2020-03-01 00:00:10], nil)
 
     assert nil ==
              SprinklerPi.Schedule.filter_active(schedule, ~N[2020-03-01 00:03:01], nil)
 
-    assert {7, 23, 59, 240} ==
+    assert {5, 7, 23, 59, 240} ==
              SprinklerPi.Schedule.filter_active(schedule, ~N[2020-03-01 23:59:30], nil)
 
-    assert {7, 23, 59, 240} ==
+    assert {5, 7, 23, 59, 240} ==
              SprinklerPi.Schedule.filter_active(schedule, ~N[2020-03-02 00:00:10], nil)
 
     assert nil ==
@@ -52,11 +52,11 @@ defmodule SprinklerPi.ScheduleTest do
 
   test "filter next schedule", %{:schedule => schedule} do
     # saturday
-    assert {6, 23, 59, 240} ==
+    assert {4, 6, 23, 59, 240} ==
              SprinklerPi.Schedule.filter_next(schedule, ~N[2020-02-29 12:30:00])
 
     # tuesday
-    assert {3, 12, 40, 120} ==
+    assert {1, 3, 12, 40, 120} ==
              SprinklerPi.Schedule.filter_next(schedule, ~N[2020-02-25 12:41:00])
   end
 

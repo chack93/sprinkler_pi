@@ -30,6 +30,7 @@ span {
 hr {
   border-color: $white;
   border-width: 1px;
+  border-bottom-width: 0;
   border-style: solid;
   margin: 0.5rem;
 }
@@ -38,7 +39,7 @@ hr {
 }
 button,
 .button {
-  min-width: 4rem;
+  min-width: 2rem;
   display: block;
   text-decoration: none;
   background-color: $blue;
@@ -51,6 +52,11 @@ button,
   border: none;
   font-size: 1rem;
   font-family: inherit;
+  transition: transform ease 0.25s;
+  transform: translateZ(1px);
+  &:active {
+    transform: scale(0.95);
+  }
   &.inactive {
     opacity: 0.5;
   }

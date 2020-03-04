@@ -2,21 +2,10 @@ defmodule SprinklerPiUiWeb.DashboardLive do
   use Phoenix.LiveView
   import SprinklerPiUiWeb.Gettext
   alias SprinklerPiUiWeb.Router.Helpers, as: Routes
-  alias SprinklerPi.Control
-
-  def radio_tag(assigns) do
-    assigns = Enum.into(assigns, %{})
-
-    ~L"""
-    <input type="radio" name="<%= @name %>" value="<%= @value %>"
-    <%= if @value == @checked, do: "checked" %>
-        />
-    """
-  end
 
   def render(assigns) do
     ~L"""
-    <div class="card-container">
+    <div class="card-container" style="padding-bottom: 4rem;">
       <div class="card">
         <div class="card-content"></div>
       </div>
@@ -27,7 +16,14 @@ defmodule SprinklerPiUiWeb.DashboardLive do
         <div class="card-content"></div>
       </div>
       <div class="card card-half">
-        <div class="card-content"></div>
+        <div class="card-content">
+          <section>
+            <h2><%= gettext "Schedule" %></h2>
+            <button 
+              phx-click="click_open_schedule_screen"
+              style="width: 100%; font-size: 4rem;">📅</button>
+          </section>
+        </div>
       </div>
       <div class="card card-half">
         <div class="card-content">
@@ -46,7 +42,6 @@ defmodule SprinklerPiUiWeb.DashboardLive do
             <hr />
             <div class="flex" style="padding: 0 0.5rem;">
               <button 
-               style="z-index: 1;"
                 phx-click="click_manual_override_reset"
                 class="<%= if @manual_override == nil do "inactive" end %>" >
               <%= gettext "Reset" %>
@@ -72,6 +67,8 @@ defmodule SprinklerPiUiWeb.DashboardLive do
       Process.send(self(), :manual_override_timer_tick, [])
     end
 
+    socket = assign(socket, page_title: "Dashboard")
+
     {:ok,
      assign(socket,
        active_schedule: active_schedule,
@@ -83,6 +80,15 @@ defmodule SprinklerPiUiWeb.DashboardLive do
      )}
   end
 
+  def handle_event("click_open_schedule_screen", _, socket) do
+    {:noreply, 
+      live_redirect(
+            socket, 
+            to: Routes.live_path(socket, SprinklerPiUiWeb.ScheduleLive)
+      )
+    }
+  end
+  
   def handle_event("click_manual_override", %{"value" => "true"}, socket) do
     SprinklerPi.Schedule.set_override(true)
     {:noreply, socket}
