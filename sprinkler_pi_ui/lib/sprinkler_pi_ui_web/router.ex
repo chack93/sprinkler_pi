@@ -19,8 +19,8 @@ defmodule SprinklerPiUiWeb.Router do
 
     live "/", DashboardLive
     live "/dashboard", DashboardLive
-    live "/about", AboutLive
     live "/schedule", ScheduleLive
+    live "/setting", SettingLive
   end
 
   # Other scopes may use custom stacks.

@@ -36,9 +36,9 @@
     <footer>
       <nav role="navigation">
         <ul>
-          <li><a class="button" href="<%= Routes.live_path(@conn, SprinklerPiUiWeb.DashboardLive) %>">Dashboard</a></li>
-          <li><a class="button" href="<%= Routes.live_path(@conn, SprinklerPiUiWeb.ScheduleLive) %>">Schedule</a></li>
-          <li><a class="button" href="<%= Routes.live_path(@conn, SprinklerPiUiWeb.AboutLive) %>">About</a></li>
+          <li><a class="button" href="<%= Routes.live_path(@conn, SprinklerPiUiWeb.DashboardLive) %>"><%= gettext("Dashboard") %></a></li>
+          <li><a class="button" href="<%= Routes.live_path(@conn, SprinklerPiUiWeb.ScheduleLive) %>"><%= gettext("Schedule") %></a></li>
+          <li><a class="button" href="<%= Routes.live_path(@conn, SprinklerPiUiWeb.SettingLive) %>"><%= gettext("Setting") %></a></li>
         </ul>
       </nav>
     </footer>
