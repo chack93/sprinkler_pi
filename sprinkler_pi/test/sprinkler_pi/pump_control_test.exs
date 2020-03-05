@@ -27,6 +27,14 @@ defmodule SprinklerPi.PumpControlTest do
     assert true == SprinklerPi.PumpControl.active?()
 
     receive do
+      {"pump-error", {:ok, nil}, _ts} ->nil
+      e -> flunk("wrong event sent #{inspect(e)}")
+    after
+      1 ->
+        flunk("no event sent")
+    end
+
+    receive do
       {"pump-change", true, _ts} -> nil
       e -> flunk("wrong event sent #{inspect(e)}")
     after
@@ -60,7 +68,14 @@ defmodule SprinklerPi.PumpControlTest do
     :timer.sleep(100)
 
     receive do
-      {"pump-error", "water-low", _ts} -> nil
+      {"pump-error", {:ok, nil}, _ts} ->nil
+      e -> flunk("wrong event sent #{inspect(e)}")
+    after
+      1 ->
+        flunk("no event sent")
+    end
+    receive do
+      {"pump-error", {:error, "water-low"}, _ts} -> nil
       e -> flunk("wrong event sent #{inspect(e)}")
     after
       1 ->

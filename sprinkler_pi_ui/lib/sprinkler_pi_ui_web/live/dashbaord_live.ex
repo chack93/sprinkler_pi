@@ -5,23 +5,53 @@ defmodule SprinklerPiUiWeb.DashboardLive do
 
   def render(assigns) do
     ~L"""
-    <div class="card-container" style="padding-bottom: 4rem;">
+    <div class="card-container dashboard">
       <div class="card">
-        <div class="card-content"></div>
+        <div class="card-content">
+          <section>
+            <h2><%= gettext "History" %></h2>
+            <p>¯\_(ツ)_/¯</p>
+          </section>
+        </div>
       </div>
       <div class="card card-half">
-        <div class="card-content"></div>
+        <div class="card-content">
+          <section>
+            <h2><%= gettext "Weather" %></h2>
+            <p>¯\_(ツ)_/¯</p>
+          </section>
+        </div>
       </div>
       <div class="card card-half">
-        <div class="card-content"></div>
+        <div class="card-content">
+          <section class="dashboard-status">
+            <h2><%= gettext "Status" %></h2>
+            <div class="dashboard-status-list">
+              <%= if @pump_error == "water-low" do %>
+                <div class="dashboard-status-banner error"><%= gettext("Water level low") %></div>
+              <% end %>
+              <%= if @active_schedule != nil do %>
+              <% {id, w, h, m, d} = @active_schedule %> 
+              <% w = weekday_to_text(w)  %>
+              <% h = pad_time(h) %>
+              <% m = pad_time(m) %>
+              <% d = round(d / 60) %>
+              <div class="dashboard-status-banner">
+                <%= gettext("Active schedule:") %><br />
+                <%= gettext("%{w} %{h}:%{m} %{d} min", w: w, h: h, m: m, d: d) %>
+              </div>
+              <% end %>
+            </div>
+          </section>
+        </div>
       </div>
       <div class="card card-half">
         <div class="card-content">
           <section>
             <h2><%= gettext "Schedule" %></h2>
             <button 
-              phx-click="click_open_schedule_screen"
-              style="width: 100%; font-size: 4rem;">📅</button>
+              class="dashboard-schedule-button"
+              phx-click="click_open_schedule_screen">📅</button>
           </section>
         </div>
       </div>
@@ -40,13 +70,13 @@ defmodule SprinklerPiUiWeb.DashboardLive do
               <span class="toggle-switch-slider"></span>
             </label>
             <hr />
-            <div class="flex" style="padding: 0 0.5rem;">
+            <div class="flex dashboard-control-reset">
               <button 
                 phx-click="click_manual_override_reset"
                 class="<%= if @manual_override == nil do "inactive" end %>" >
               <%= gettext "Reset" %>
               </button>
-              <span style="font-size: 1.25rem; padding-top: 2px;"><%= gettext("%{time} sec", time: @manual_override_remaining_time) %></span>
+              <span class="dashboard-control-reset-time"><%= gettext("%{time} sec", time: @manual_override_remaining_time) %></span>
             </div>
           </section>
         </div>
@@ -61,7 +91,12 @@ defmodule SprinklerPiUiWeb.DashboardLive do
     {manual_override, manual_override_start} = SprinklerPi.Schedule.get_override()
     active_schedule = SprinklerPi.Schedule.active()
     pump_active = SprinklerPi.PumpControl.active?()
-    pump_error = SprinklerPi.PumpControl.error()
+
+    pump_error =
+      case SprinklerPi.PumpControl.error() do
+        {:error, msg} -> msg
+        _ -> ""
+      end
 
     if manual_override != nil do
       Process.send(self(), :manual_override_timer_tick, [])
@@ -81,14 +116,13 @@ defmodule SprinklerPiUiWeb.DashboardLive do
   end
 
   def handle_event("click_open_schedule_screen", _, socket) do
-    {:noreply, 
-      live_redirect(
-            socket, 
-            to: Routes.live_path(socket, SprinklerPiUiWeb.ScheduleLive)
-      )
-    }
+    {:noreply,
+     live_redirect(
+       socket,
+       to: Routes.live_path(socket, SprinklerPiUiWeb.ScheduleLive)
+     )}
   end
-  
+
   def handle_event("click_manual_override", %{"value" => "true"}, socket) do
     SprinklerPi.Schedule.set_override(true)
     {:noreply, socket}
@@ -142,7 +176,26 @@ defmodule SprinklerPiUiWeb.DashboardLive do
     {:noreply, assign(socket, pump_active: state)}
   end
 
-  def handle_info({"pump-error", pump_error, _ts}, socket) do
-    {:noreply, assign(socket, pump_error: pump_error)}
+  def handle_info({"pump-error", {:error, msg}, _ts}, socket) do
+    {:noreply, assign(socket, pump_error: msg)}
   end
+
+  def handle_info({"pump-error", _, _ts}, socket) do
+    {:noreply, assign(socket, pump_error: "")}
+  end
+
+  defp weekday_to_text(weekday) do
+    case weekday do
+      1 -> "Mon"
+      2 -> "Tue"
+      3 -> "Wed"
+      4 -> "Thr"
+      5 -> "Fri"
+      6 -> "Sat"
+      7 -> "Sun"
+      _ -> ""
+    end
+  end
+
+  defp pad_time(number), do: Integer.to_string(number) |> String.pad_leading(2, "0")
 end

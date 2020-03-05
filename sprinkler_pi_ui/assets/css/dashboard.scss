@@ -1,0 +1,40 @@
+.dashboard {
+  padding-bottom: 4rem;
+  &-status{
+    height: 100%;
+    box-sizing: border-box;
+    &-list {
+      position: absolute;
+      left: 0.5rem;
+      right: 0.5rem;
+      top: 3rem;
+      bottom: 1rem;
+      box-sizing: border-box;
+      padding: 0 0.5rem;
+      overflow-y: auto;
+    }
+    &-banner {
+      margin: 0.25rem 0;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      background-color: $dark-blue;
+      box-shadow: 0 0.125rem 0.25rem $shadow-black, 0 0.125rem 0.25rem $shadow-white inset;
+      &.error{
+        background-color: $red;
+      }
+    }
+  }
+  &-schedule{
+    &-button {
+      width: 100%;
+      font-size: 4rem;
+    }
+  }
+  &-control-reset {
+    padding: 0 0.5rem;
+    &-time {
+      font-size: 1.25rem;
+      padding-top: 2px;
+    }
+  }
+}
