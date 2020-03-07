@@ -63,7 +63,6 @@ defmodule SprinklerPi.ScheduleTest do
   test "get/set override", _ do
     Phoenix.PubSub.subscribe(SprinklerPiUi.PubSub, "schedule")
 
-    assert {nil, nil} == SprinklerPi.Schedule.get_override()
     assert :ok == SprinklerPi.Schedule.set_override(true)
 
     receive do

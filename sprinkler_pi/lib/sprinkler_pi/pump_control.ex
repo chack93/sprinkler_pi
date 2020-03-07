@@ -17,7 +17,7 @@ defmodule SprinklerPi.PumpControl do
   @impl true
   def init(_) do
     Phoenix.PubSub.subscribe(SprinklerPiUi.PubSub, "io-change")
-    {:ok, {}}
+    {:ok, {0}}
   end
 
   @doc """
@@ -67,12 +67,14 @@ defmodule SprinklerPi.PumpControl do
   def on() do
     if SprinklerPi.Control.get_state(:io_water_sensor) == "off" do
       Logger.warn("SprinklerPi.PumpControl.on - abort, water low")
+      SprinklerPi.Control.set_state(:io_led_red, "on")
       :error
     else
       Logger.info("SprinklerPi.PumpControl.on")
       SprinklerPi.Control.set_state(:io_motor, "on")
       SprinklerPi.Control.set_state(:io_valve, "on")
       SprinklerPi.Control.set_state(:io_led_green, "on")
+      SprinklerPi.Control.set_state(:io_led_red, "off")
       :ok
     end
   end
@@ -82,6 +84,7 @@ defmodule SprinklerPi.PumpControl do
     if water_state == "off" do
       Logger.warn("SprinklerPi.PumpControl:io_change - water low, power off pump")
       off()
+      SprinklerPi.Control.set_state(:io_led_red, "on")
 
       Phoenix.PubSub.broadcast(
         SprinklerPiUi.PubSub,
@@ -89,6 +92,8 @@ defmodule SprinklerPi.PumpControl do
         {"pump-error", {:error, "water-low"}, timestamp}
       )
     else
+      SprinklerPi.Control.set_state(:io_led_red, "off")
+
       Phoenix.PubSub.broadcast(
         SprinklerPiUi.PubSub,
         "pump-control",
@@ -108,6 +113,24 @@ defmodule SprinklerPi.PumpControl do
     )
 
     {:noreply, state}
+  end
+
+  def handle_info({"io_change", :io_button, "on", timestamp}, _state) do
+    {:noreply, {timestamp}}
+  end
+
+  def handle_info({"io_change", :io_button, "off", timestamp}, {last_btn_down})
+      when timestamp - last_btn_down > 100_000 do
+    {override_active, _} = SprinklerPi.Schedule.get_override()
+    if override_active do
+      Logger.info("SprinklerPi.PumpControl:io_change - manual off")
+      SprinklerPi.Schedule.set_override(false)
+    else
+      Logger.info("SprinklerPi.PumpControl:io_change - manual on")
+      SprinklerPi.Schedule.set_override(true)
+    end
+
+    {:noreply, {last_btn_down}}
   end
 
   def handle_info(_, state) do

@@ -1,5 +1,5 @@
 defmodule SprinklerPi.PumpControlTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case
 
   setup_all do
     SprinklerPi.Control.set_state(:io_motor, "off")
@@ -24,10 +24,11 @@ defmodule SprinklerPi.PumpControlTest do
     assert "on" == SprinklerPi.Control.get_state(:io_motor)
     assert "on" == SprinklerPi.Control.get_state(:io_valve)
     assert "on" == SprinklerPi.Control.get_state(:io_led_green)
+    assert "off" == SprinklerPi.Control.get_state(:io_led_red)
     assert true == SprinklerPi.PumpControl.active?()
 
     receive do
-      {"pump-error", {:ok, nil}, _ts} ->nil
+      {"pump-error", {:ok, nil}, _ts} -> nil
       e -> flunk("wrong event sent #{inspect(e)}")
     after
       1 ->
@@ -47,6 +48,7 @@ defmodule SprinklerPi.PumpControlTest do
     assert "off" == SprinklerPi.Control.get_state(:io_motor)
     assert "off" == SprinklerPi.Control.get_state(:io_valve)
     assert "off" == SprinklerPi.Control.get_state(:io_led_green)
+    assert "off" == SprinklerPi.Control.get_state(:io_led_red)
     assert false == SprinklerPi.PumpControl.active?()
 
     receive do
@@ -68,12 +70,13 @@ defmodule SprinklerPi.PumpControlTest do
     :timer.sleep(100)
 
     receive do
-      {"pump-error", {:ok, nil}, _ts} ->nil
+      {"pump-error", {:ok, nil}, _ts} -> nil
       e -> flunk("wrong event sent #{inspect(e)}")
     after
       1 ->
         flunk("no event sent")
     end
+
     receive do
       {"pump-error", {:error, "water-low"}, _ts} -> nil
       e -> flunk("wrong event sent #{inspect(e)}")
@@ -88,6 +91,32 @@ defmodule SprinklerPi.PumpControlTest do
     assert "off" == SprinklerPi.Control.get_state(:io_motor)
     assert "off" == SprinklerPi.Control.get_state(:io_valve)
     assert "off" == SprinklerPi.Control.get_state(:io_led_green)
+    assert "on" == SprinklerPi.Control.get_state(:io_led_red)
     assert false == SprinklerPi.PumpControl.active?()
+  end
+
+  test "manual override button", _ do
+    assert :ok = SprinklerPi.Schedule.set_override(false)
+
+    assert :ok == SprinklerPi.Control.set_state(:io_button, "on")
+    :timer.sleep(300)
+    assert :ok == SprinklerPi.Control.set_state(:io_button, "off")
+
+    :timer.sleep(100)
+    assert {true, ts} = SprinklerPi.Schedule.get_override()
+
+    assert :ok == SprinklerPi.Control.set_state(:io_button, "on")
+    :timer.sleep(300)
+    assert :ok == SprinklerPi.Control.set_state(:io_button, "off")
+
+    :timer.sleep(100)
+    assert {false, ts} = SprinklerPi.Schedule.get_override()
+
+    assert :ok == SprinklerPi.Control.set_state(:io_button, "on")
+    :timer.sleep(10)
+    assert :ok == SprinklerPi.Control.set_state(:io_button, "off")
+
+    :timer.sleep(100)
+    assert {false, ts} = SprinklerPi.Schedule.get_override()
   end
 end

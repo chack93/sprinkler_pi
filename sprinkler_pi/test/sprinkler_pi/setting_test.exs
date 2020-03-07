@@ -2,7 +2,11 @@ defmodule SprinklerPi.SettingTest do
   use ExUnit.Case
 
   test "setting test" do
-    SprinklerPi.Setting.set(%{"schedule" => []})
+    SprinklerPi.Setting.set(%{
+      "schedule" => [],
+      "override_timeout_seconds" => 120,
+      "filter_min_pump_time_seconds" => 5
+    })
 
     assert %{
              "schedule" => [],
