@@ -11,11 +11,17 @@ config :sprinkler_pi_ui, SprinklerPiUiWeb.Endpoint,
 
 config :sprinkler_pi, target: Mix.target()
 
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
+if Mix.target() != :host do
+  config :tzdata, :data_dir, "/root/elixir_tzdata_data"
+end
+
 config :nerves, :firmware, rootfs_overlay: "rootfs_overlay"
 
 config :nerves, source_date_epoch: "1581777418"
 
-if Mix.env != :dev do
+if Mix.env() != :dev do
   config :logger, backends: [RingLogger]
 end
 

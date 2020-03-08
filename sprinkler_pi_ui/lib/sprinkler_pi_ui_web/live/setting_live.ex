@@ -17,6 +17,11 @@ defmodule SprinklerPiUiWeb.SettingLive do
             <span class="setting-text"><%= gettext("Statistic min pump time") %>: <%= gettext("%{t} seconds", t: @filter_min_pump_time_seconds) %></span>
             <button class="setting-button-edit" phx-click="click_edit_row" phx-value-type="filter_min_pump_time_seconds">✎</button>
           </div>
+          <hr />
+          <div class="setting-row flex">
+            <span class="setting-text"><%= gettext("Timezone") %>: <%= @timezone %></span>
+            <button class="setting-button-edit" phx-click="click_edit_row" phx-value-type="timezone">✎</button>
+          </div>
         </div>
       </div>
       <div class="setting-container">
@@ -56,26 +61,30 @@ defmodule SprinklerPiUiWeb.SettingLive do
 
   def render_dialog(assigns) do
     ~L"""
-     <div class="setting-dialog" tabindex="-1" phx-click="click_dialog_close">
-       <div class="setting-dialog-container" phx-click>
-         <h2><%= if @dialog_type == "override_timeout_seconds" do gettext("Override timeout") else gettext("Statistic min pump time") end %></h2> 
-         <div class="setting-dialog-input">
-           <%= if @dialog_type == "override_timeout_seconds" do %>
-           <%= render_selection(assigns, event: "override_timeout_seconds", value: @dialog_data) %>
-           <% else %>
-           <%= render_selection(assigns, event: "filter_min_pump_time_seconds", value: @dialog_data) %>
-           <% end %>
-         </div>
-         <button class="setting-dialog-confirm" phx-click="click_dialog_confirm"><%= gettext("Confirm") %></button>
-       </div>
-     </div>
+    <div class="setting-dialog" tabindex="-1" phx-click="click_dialog_close">
+      <div class="setting-dialog-container" phx-click>
+        <h2><%= if @dialog_type == "override_timeout_seconds" do gettext("Override timeout") else gettext("Statistic min pump time") end %></h2> 
+        <div class="setting-dialog-input">
+          <%=
+          case @dialog_type do
+            "override_timeout_seconds" ->
+              render_selection(assigns, event: "override_timeout_seconds", value: @dialog_data)
+            "filter_min_pump_time_seconds" ->  
+              render_selection(assigns, event: "filter_min_pump_time_seconds", value: @dialog_data)
+            "timezone" ->
+              render_input(assigns, event: "timezone", value: @dialog_data)
+          end
+          %>
+        </div>
+        <button class="setting-dialog-confirm button" phx-click="click_dialog_confirm"><%= gettext("Confirm") %></button>
+      </div>
+    </div>
     """
   end
 
   def render_selection(assigns, opt) do
     ~L"""
     <div class="setting-selection-container">
-      <div class="setting-selection-title"><%= opt[:title] %></div>
       <button
         phx-click="click_dialog_change" 
         phx-value-increase="<%= opt[:event] %>">+</button>
@@ -87,17 +96,29 @@ defmodule SprinklerPiUiWeb.SettingLive do
     """
   end
 
+  def render_input(assigns, opt) do
+    ~L"""
+    <div class="setting-input-container">
+      <form>
+        <input type="text" name="<%= opt[:event] %>" value="<%= opt[:value] %>" phx-value-event="<%= opt[:event] %>" phx-blur="blur_dialog"/>
+      </form>
+    </div>
+    """
+  end
+
   def mount(_params, _session, socket) do
     Phoenix.PubSub.subscribe(SprinklerPiUi.PubSub, "setting")
 
     %{
       "override_timeout_seconds" => override_timeout_seconds,
-      "filter_min_pump_time_seconds" => filter_min_pump_time_seconds
+      "filter_min_pump_time_seconds" => filter_min_pump_time_seconds,
+      "timezone" => timezone
     } = SprinklerPi.Setting.get()
 
     state = [
       override_timeout_seconds: override_timeout_seconds,
       filter_min_pump_time_seconds: filter_min_pump_time_seconds,
+      timezone: timezone,
       dialog_data: 0,
       dialog_type: "",
       edit_dialog_show: false,
@@ -123,6 +144,15 @@ defmodule SprinklerPiUiWeb.SettingLive do
      assign(socket,
        dialog_data: socket.assigns.filter_min_pump_time_seconds,
        dialog_type: "filter_min_pump_time_seconds",
+       edit_dialog_show: true
+     )}
+  end
+
+  def handle_event("click_edit_row", %{"type" => "timezone"}, socket) do
+    {:noreply,
+     assign(socket,
+       dialog_data: socket.assigns.timezone,
+       dialog_type: "timezone",
        edit_dialog_show: true
      )}
   end
@@ -155,22 +185,33 @@ defmodule SprinklerPiUiWeb.SettingLive do
     {:noreply, assign(socket, dialog_data: data)}
   end
 
+  def handle_event("blur_dialog", %{"event" => "timezone", "value" => value}, socket) do
+    {:noreply, assign(socket, dialog_data: value)}
+  end
+
   def handle_event("click_dialog_confirm", _, socket) do
     %{
       "override_timeout_seconds" => override_timeout_seconds,
-      "filter_min_pump_time_seconds" => filter_min_pump_time_seconds
+      "filter_min_pump_time_seconds" => filter_min_pump_time_seconds,
+      "timezone" => timezone
     } =
-      if socket.assigns.dialog_type == "override_timeout_seconds" do
-        SprinklerPi.Setting.set(%{"override_timeout_seconds" => socket.assigns.dialog_data})
-      else
-        SprinklerPi.Setting.set(%{"filter_min_pump_time_seconds" => socket.assigns.dialog_data})
+      case socket.assigns.dialog_type do
+        "override_timeout_seconds" ->
+          SprinklerPi.Setting.set(%{"override_timeout_seconds" => socket.assigns.dialog_data})
+
+        "filter_min_pump_time_seconds" ->
+          SprinklerPi.Setting.set(%{"filter_min_pump_time_seconds" => socket.assigns.dialog_data})
+
+        "timezone" ->
+          SprinklerPi.Setting.set(%{"timezone" => socket.assigns.dialog_data})
       end
 
     {:noreply,
      assign(socket,
        edit_dialog_show: false,
        override_timeout_seconds: override_timeout_seconds,
-       filter_min_pump_time_seconds: filter_min_pump_time_seconds
+       filter_min_pump_time_seconds: filter_min_pump_time_seconds,
+       timezone: timezone
      )}
   end
 

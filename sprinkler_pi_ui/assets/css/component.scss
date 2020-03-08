@@ -61,6 +61,15 @@ button,
     opacity: 0.5;
   }
 }
+input {
+  background-color: $grey;
+  border: none; //1px solid $white;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  font-size: inherit;
+  text-align: center;
+  box-shadow: 0 0.125rem 0.25rem $shadow-black inset;
+}
 .flex {
   display: flex;
   justify-content: space-between;

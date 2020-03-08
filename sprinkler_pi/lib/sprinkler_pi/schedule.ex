@@ -73,7 +73,7 @@ defmodule SprinklerPi.Schedule do
   @impl true
   def handle_call({:active}, _from, {override, override_start}) do
     %{"schedule" => schedule} = SprinklerPi.Setting.get()
-    active = filter_active(schedule, NaiveDateTime.local_now(), override)
+    active = filter_active(schedule, local_time(), override)
     {:reply, active, {override, override_start}}
   end
 
@@ -81,7 +81,7 @@ defmodule SprinklerPi.Schedule do
   @impl true
   def handle_call({:next_schedule}, _from, {override, override_start}) do
     %{"schedule" => schedule} = SprinklerPi.Setting.get()
-    next = filter_next(schedule, NaiveDateTime.local_now())
+    next = filter_next(schedule, local_time())
 
     {:reply, next, {override, override_start}}
   end
@@ -143,7 +143,7 @@ defmodule SprinklerPi.Schedule do
         {override, override_start}
       end
 
-    active_schedule = filter_active(schedule, NaiveDateTime.local_now(), override)
+    active_schedule = filter_active(schedule, local_time(), override)
     pump_active = SprinklerPi.PumpControl.active?()
 
     cond do
@@ -192,7 +192,7 @@ defmodule SprinklerPi.Schedule do
     schedule
     |> Enum.filter(fn {_id, w, h, m, duration} ->
       sch_start = Map.merge(now, %{:day => w, :hour => h, :minute => m, :second => 0})
-      sch_end = NaiveDateTime.add(sch_start, duration, :second)
+      sch_end = DateTime.add(sch_start, duration, :second)
 
       # in case schedule stretches sunday->monday & now passes midnight
       # fix now for accurate comparison
@@ -201,8 +201,8 @@ defmodule SprinklerPi.Schedule do
           do: Map.merge(now, %{:day => 8}),
           else: now
 
-      cmp_start = NaiveDateTime.compare(sch_start, now)
-      cmp_end = NaiveDateTime.compare(now, sch_end)
+      cmp_start = DateTime.compare(sch_start, now)
+      cmp_end = DateTime.compare(now, sch_end)
 
       cond do
         cmp_start == :lt and cmp_end == :lt -> true
@@ -234,5 +234,11 @@ defmodule SprinklerPi.Schedule do
       base + past_factor
     end)
     |> Enum.at(0)
+  end
+
+  defp local_time() do
+    %{"timezone" => timezone} = SprinklerPi.Setting.get()
+    {:ok, time} = DateTime.now(timezone)
+    time
   end
 end

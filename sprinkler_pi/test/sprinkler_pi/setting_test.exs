@@ -5,13 +5,15 @@ defmodule SprinklerPi.SettingTest do
     SprinklerPi.Setting.set(%{
       "schedule" => [],
       "override_timeout_seconds" => 120,
-      "filter_min_pump_time_seconds" => 5
+      "filter_min_pump_time_seconds" => 5,
+      "timezone" => "Etc/UTC"
     })
 
     assert %{
              "schedule" => [],
              "override_timeout_seconds" => 120,
-             "filter_min_pump_time_seconds" => 5
+             "filter_min_pump_time_seconds" => 5,
+             "timezone" => "Etc/UTC"
            } == SprinklerPi.Setting.get()
 
     new_schedule = [
@@ -22,14 +24,16 @@ defmodule SprinklerPi.SettingTest do
     assert %{
              "schedule" => new_schedule,
              "override_timeout_seconds" => 120,
-             "filter_min_pump_time_seconds" => 5
+             "filter_min_pump_time_seconds" => 5,
+             "timezone" => "Europe/Vienna"
            } ==
-             SprinklerPi.Setting.set(%{"schedule" => new_schedule})
+             SprinklerPi.Setting.set(%{"schedule" => new_schedule, "timezone" => "Europe/Vienna"})
 
     assert %{
              "schedule" => new_schedule,
              "override_timeout_seconds" => 120,
-             "filter_min_pump_time_seconds" => 5
+             "filter_min_pump_time_seconds" => 5,
+             "timezone" => "Europe/Vienna"
            } == SprinklerPi.Setting.get()
   end
 end

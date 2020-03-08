@@ -17,47 +17,47 @@ defmodule SprinklerPi.ScheduleTest do
   test "filter active schedule", %{:schedule => schedule} do
     # tuesday
     assert {2, 2, 12, 30, 120} ==
-             SprinklerPi.Schedule.filter_active(schedule, ~N[2020-02-25 12:30:00], nil)
+             SprinklerPi.Schedule.filter_active(schedule, ~U[2020-02-25 12:30:00Z], nil)
 
     assert {2, 2, 12, 30, 120} ==
-             SprinklerPi.Schedule.filter_active(schedule, ~N[2020-02-25 12:31:59], nil)
+             SprinklerPi.Schedule.filter_active(schedule, ~U[2020-02-25 12:31:59Z], nil)
 
     assert {4, 6, 23, 59, 240} ==
-             SprinklerPi.Schedule.filter_active(schedule, ~N[2020-02-29 23:59:30], nil)
+             SprinklerPi.Schedule.filter_active(schedule, ~U[2020-02-29 23:59:30Z], nil)
 
     assert {4, 6, 23, 59, 240} ==
-             SprinklerPi.Schedule.filter_active(schedule, ~N[2020-03-01 00:00:10], nil)
+             SprinklerPi.Schedule.filter_active(schedule, ~U[2020-03-01 00:00:10Z], nil)
 
     assert nil ==
-             SprinklerPi.Schedule.filter_active(schedule, ~N[2020-03-01 00:03:01], nil)
+             SprinklerPi.Schedule.filter_active(schedule, ~U[2020-03-01 00:03:01Z], nil)
 
     assert {5, 7, 23, 59, 240} ==
-             SprinklerPi.Schedule.filter_active(schedule, ~N[2020-03-01 23:59:30], nil)
+             SprinklerPi.Schedule.filter_active(schedule, ~U[2020-03-01 23:59:30Z], nil)
 
     assert {5, 7, 23, 59, 240} ==
-             SprinklerPi.Schedule.filter_active(schedule, ~N[2020-03-02 00:00:10], nil)
+             SprinklerPi.Schedule.filter_active(schedule, ~U[2020-03-02 00:00:10Z], nil)
 
     assert nil ==
-             SprinklerPi.Schedule.filter_active(schedule, ~N[2020-03-02 00:03:01], nil)
+             SprinklerPi.Schedule.filter_active(schedule, ~U[2020-03-02 00:03:01Z], nil)
 
     assert nil ==
-             SprinklerPi.Schedule.filter_active(schedule, ~N[2020-02-25 13:30:00], nil)
+             SprinklerPi.Schedule.filter_active(schedule, ~U[2020-02-25 13:30:00Z], nil)
 
     assert nil ==
-             SprinklerPi.Schedule.filter_active(schedule, ~N[2020-02-25 12:30:00], true)
+             SprinklerPi.Schedule.filter_active(schedule, ~U[2020-02-25 12:30:00Z], true)
 
     assert nil ==
-             SprinklerPi.Schedule.filter_active(schedule, ~N[2020-02-25 12:30:00], false)
+             SprinklerPi.Schedule.filter_active(schedule, ~U[2020-02-25 12:30:00Z], false)
   end
 
   test "filter next schedule", %{:schedule => schedule} do
     # saturday
     assert {4, 6, 23, 59, 240} ==
-             SprinklerPi.Schedule.filter_next(schedule, ~N[2020-02-29 12:30:00])
+             SprinklerPi.Schedule.filter_next(schedule, ~U[2020-02-29 12:30:00Z])
 
     # tuesday
     assert {1, 3, 12, 40, 120} ==
-             SprinklerPi.Schedule.filter_next(schedule, ~N[2020-02-25 12:41:00])
+             SprinklerPi.Schedule.filter_next(schedule, ~U[2020-02-25 12:41:00Z])
   end
 
   test "get/set override", _ do

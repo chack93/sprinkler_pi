@@ -10,7 +10,8 @@ defmodule SprinklerPi.Setting do
   @default_setting %{
     "schedule" => [],
     "override_timeout_seconds" => 120,
-    "filter_min_pump_time_seconds" => 5
+    "filter_min_pump_time_seconds" => 5,
+    "timezone" => "Etc/UTC"
   }
 
   def start_link(_) do
@@ -24,7 +25,8 @@ defmodule SprinklerPi.Setting do
         {:ok, file} = File.read(@setting_filename)
         {:ok, setting} = Jason.decode(file)
         schedule = Enum.map(setting["schedule"], fn el -> List.to_tuple(el) end)
-        Map.merge(setting, %{"schedule" => schedule})
+        setting = Map.merge(setting, %{"schedule" => schedule})
+        Map.merge(@default_setting, setting)
       else
         schedule = Enum.map(@default_setting["schedule"], fn el -> Tuple.to_list(el) end)
         setting_tuple_replaced = Map.merge(@default_setting, %{"schedule" => schedule})
@@ -40,7 +42,7 @@ defmodule SprinklerPi.Setting do
   get setting
   # Example
   iex> SprinklerPi.Setting.get()
-  ... %{ :schedule => [{1, 23, 59, 120}], :override_timeout_seconds => 120, :filter_min_pump_time_seconds => 5 }
+  ... %{ "schedule" => [{1, 23, 59, 120}], "override_timeout_seconds" => 120, "filter_min_pump_time_seconds" => 5, "timezone" => "Etc/UTC" }
   """
   def get() do
     GenServer.call(SprinklerPi.Setting, {:get})
@@ -50,7 +52,7 @@ defmodule SprinklerPi.Setting do
   set setting. map-merge parts, then writes to file
   # Example
   iex> SprinklerPi.Setting.set(%{:override_timeout_seconds => 60})
-  ... %{ :schedule => [{1, 23, 59, 120}], :override_timeout_seconds => 60, :filter_min_pump_time_seconds => 5 }
+  ... %{ "schedule" => [{1, 23, 59, 120}], "override_timeout_seconds" => 60, "filter_min_pump_time_seconds" => 5, "timezone" => "Etc/UTC" }
   """
   def set(map) do
     GenServer.call(SprinklerPi.Setting, {:set, map})
