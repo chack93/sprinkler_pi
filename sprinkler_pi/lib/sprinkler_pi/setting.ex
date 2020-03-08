@@ -5,7 +5,7 @@ defmodule SprinklerPi.Setting do
   def handle_info({"setting-change", %{"schedule": [], ...}, timestamp}, state)
   """
   use GenServer
-  @setting_filename "sprinkler_pi_setting.json"
+  @setting_filename if Mix.env() == :prod, do: "/root/sprinkler_pi_setting.json", else: "./sprinkler_pi_setting.json"
 
   @default_setting %{
     "schedule" => [],
