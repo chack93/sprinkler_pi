@@ -33,3 +33,5 @@ sprinkler_pi/deploy.sh
 
 # ---> node_modules
 sprinkler_pi_ui/assets/node_modules*
+
+.env
